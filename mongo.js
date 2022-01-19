@@ -33,7 +33,7 @@ if(process.argv.length === 3){
     Person
         .find({})   
         .then(persons=>{
-         console.log(persons)
+         persons.forEach(person=>console.log(`phonebook: ${person.name} ${person.number}`))
          mongoose.connection.close()
         })
     
