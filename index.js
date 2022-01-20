@@ -1,13 +1,17 @@
-
 const morgan = require('morgan')
 const express = require('express')
 const cors = require('cors')
+require('dotenv').config()
+
+
 
 const app = express()
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
+
+const Person = require('./models/person')
 
 let persons = [
     { 
@@ -33,35 +37,44 @@ let persons = [
 ]
 
 app.get('/api/persons',(req,res)=>{
-    res.json(persons)
+        Person.find({}).then(people => {
+            res.json(people)
+        })
     }
 )
 
 app.get('/info',(req,res)=>{
-    res.send(`<p>Phonebook has inof for ${persons.length} people.
+    res.send(`<p>Phonebook has info for ${persons.length} people.
     <br>${new Date().toString()}</br></p>`)
 })
 
 app.get('/api/persons/:id', (req,res) =>{
-    const id = Number(req.params.id)
-    const person = persons.find(person=>person.id === id)
-        if(person){
-            res.json(person)
-        } else {
-            res.status(404).end()
-        }
+    // const id = Number(req.params.id)
+    // const person = persons.find(person=>person.id === id)
+    //     if(person){
+    //         res.json(person)
+    //     } else {
+    //         res.status(404).end()
+    //     }
+
+        Person.findById(req.params.id).then(people => {
+            res.json(people)
+        })
     })
 
 app.delete("/api/persons/:id", (req, res)=>{
-    const id = Number(req.params.id)
-    persons = persons.filter(person=> person.id !== id)
-    res.status(204).end()
-       
+    // const id = Number(req.params.id)
+    // persons = persons.filter(person=> person.id !== id)
+    // res.status(204).end()
+
+    Person.findByIdAndRemove(req.params.id).then(people => {
+        res.status(204).end()
+    })
 })
 
-const randomNumberGenerator = () => {
-    return Math.floor(Math.random()*10000)
-}
+// const randomNumberGenerator = () => {
+//     return Math.floor(Math.random()*10000)
+// }
 
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 
@@ -74,25 +87,28 @@ app.post('/api/persons', morgan(':method :url :status :res[content-length] - :re
             error: 'missing name or number'
         })
     }
-    if(persons.find(person=>person.name===body.name)){
-        return res.status(400).json({
-            error: 'name must be unique'
-        })
-    }
 
-    const person = {
-        id: randomNumberGenerator(),
+    // if(persons.find(person=>person.name===body.name)){
+    //     return res.status(400).json({
+    //         error: 'name must be unique'
+    //     })
+    // }
+
+    const person = new Person ({
         name: body.name, 
         number: body.number
-    }
+    })
 
-    persons = persons.concat(person)
+    // persons = persons.concat(person)
 
-    res.json(person)
+    person.save().then(savedPerson=>{
+        res.json(savedPerson)
+    })
+    
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 })
