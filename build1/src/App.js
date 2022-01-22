@@ -99,7 +99,7 @@ const App = () => {
               setNewName('')
               setNumber('')
             }).catch(error=>{
-              setErrorMessage(`Informtion for ${person.name} has already been removed from the server`)
+              setErrorMessage(`Informtion for ${person.name} has already been removed from the server `)
               setTimeout(()=>{
                 setErrorMessage(null)
               }, 5000)
