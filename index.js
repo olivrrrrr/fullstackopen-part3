@@ -37,7 +37,7 @@ let persons = [
     }
 ]
 
-app.get('/api/persons',(req,res)=>{
+app.get('/api/persons',(req,res, next)=>{
         Person.find({}).then(people => {
         if(people){
             res.json(people)
@@ -58,7 +58,7 @@ Person.find({}).then(people => {console.log(people)
 
 })
 
-app.get('/api/persons/:id', (req,res) =>{
+app.get('/api/persons/:id', (req,res, next) =>{
     // const id = Number(req.params.id)
     // const person = persons.find(person=>person.id === id)
     //     if(person){
@@ -77,7 +77,7 @@ app.get('/api/persons/:id', (req,res) =>{
         .catch(error => next(error))
     })
 
-app.delete("/api/persons/:id", (req, res)=>{
+app.delete("/api/persons/:id", (req, res, next)=>{
     // const id = Number(req.params.id)
     // persons = persons.filter(person=> person.id !== id)
     // res.status(204).end()
@@ -139,12 +139,19 @@ app.put('/api/persons/:id',(req, res, next)=>{
         .catch(error => next(error))
     })
 
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const errorHandler = (error, request, res, next) =>{
     console.error(error.message)
 
     if(error.name === 'CastError'){
         return res.status(400).send({error:'malformatted id'})
+    } else if(error.name === 'ValidationError'){
+        return res.status(400).send({error: error.message})
     }
 
     next(error)
