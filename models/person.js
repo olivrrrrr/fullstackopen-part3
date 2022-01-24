@@ -13,18 +13,8 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     })
 
 const personSchema = new mongoose.Schema({
-    name: {
-        type:String, 
-        minlength: 3,
-        required: true,
-        unique: true   
-    }, 
-    number: {
-        type:String,
-        minlength: 8,
-        required: true,
-        unique: true    
-    }
+    name: {type:String, minlength: 3, required: true, unique: true}, 
+    number: {type:String,validate: {validator: function(v) {return /\d{3||2}-/.test(v)}},minlength: 8,required: true,unique: true}
 })
 
 personSchema.set('toJSON', {

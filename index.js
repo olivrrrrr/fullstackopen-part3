@@ -37,7 +37,7 @@ let persons = [
     }
 ]
 
-app.get('/api/persons',(req,res, next)=>{
+app.get('/api/persons',(req,res,next)=>{
         Person.find({}).then(people => {
         if(people){
             res.json(people)
@@ -77,7 +77,7 @@ app.get('/api/persons/:id', (req,res, next) =>{
         .catch(error => next(error))
     })
 
-app.delete("/api/persons/:id", (req, res, next)=>{
+app.delete("/api/persons/:id", (req,res,next)=>{
     // const id = Number(req.params.id)
     // persons = persons.filter(person=> person.id !== id)
     // res.status(204).end()
@@ -94,7 +94,7 @@ app.delete("/api/persons/:id", (req, res, next)=>{
 
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 
-app.post('/api/persons', morgan(':method :url :status :res[content-length] - :response-time :body'), (req, res)=>{
+app.post('/api/persons', morgan(':method :url :status :res[content-length] - :response-time :body'), (req, res, next)=>{
 
     const body = req.body
 
@@ -117,9 +117,11 @@ app.post('/api/persons', morgan(':method :url :status :res[content-length] - :re
 
     // persons = persons.concat(person)
 
-    person.save().then(savedPerson=>{
+    person.save()
+    .then(savedPerson=>{
         res.json(savedPerson)
     })
+    .catch(error => next(error))
     
 })
 
@@ -151,7 +153,7 @@ const errorHandler = (error, request, res, next) =>{
     if(error.name === 'CastError'){
         return res.status(400).send({error:'malformatted id'})
     } else if(error.name === 'ValidationError'){
-        return res.status(400).send({error: error.message})
+        return res.status(400).json({error: error.message})
     }
 
     next(error)
