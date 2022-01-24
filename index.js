@@ -12,49 +12,49 @@ app.use(express.json())
 app.use(cors())
 
 const Person = require('./models/person')
-const { response } = require('express')
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+
+// let persons = [
+//     { 
+//       "id": 1,
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": 2,
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": 3,
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": 4,
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ]
 
 app.get('/api/persons',(req,res,next)=>{
-        Person.find({}).then(people => {
+    Person.find({}).then(people => {
         if(people){
             res.json(people)
         } else {
             res.status(404).end()
         }
-        })
+    })
         .catch(error=>{
             next(error)
         })
-    }
+}
 )
 
 app.get('/info',(req,res)=>{
 
-Person.find({}).then(people => {console.log(people) 
-    res.send(`<p>Phonebook has info for ${people.length} people.<br>${new Date().toString()}</br></p>`)})
+    Person.find({}).then(people => {console.log(people) 
+        res.send(`<p>Phonebook has info for ${people.length} people.<br>${new Date().toString()}</br></p>`)})
 
 })
 
@@ -67,32 +67,32 @@ app.get('/api/persons/:id', (req,res, next) =>{
     //         res.status(404).end()
     //     }
 
-        Person.findById(req.params.id).then(people => {
-            if(people){
-                res.json(people)
-            } else {
-                res.status(404).end()
-            }
-        })
-        .catch(error => next(error))
+    Person.findById(req.params.id).then(people => {
+        if(people){
+            res.json(people)
+        } else {
+            res.status(404).end()
+        }
     })
+        .catch(error => next(error))
+})
 
-app.delete("/api/persons/:id", (req,res,next)=>{
+app.delete('/api/persons/:id', (req,res,next)=>{
     // const id = Number(req.params.id)
     // persons = persons.filter(person=> person.id !== id)
     // res.status(204).end()
 
-    Person.findByIdAndRemove(req.params.id).then(people => {
+    Person.findByIdAndRemove(req.params.id).then(() => {
         res.status(204).end()
     })
-    .catch(error => next(error))
+        .catch(error => next(error))
 })
 
 // const randomNumberGenerator = () => {
 //     return Math.floor(Math.random()*10000)
 // }
 
-morgan.token('body', (req, res) => JSON.stringify(req.body));
+morgan.token('body', (req) => JSON.stringify(req.body))
 
 app.post('/api/persons', morgan(':method :url :status :res[content-length] - :response-time :body'), (req, res, next)=>{
 
@@ -118,10 +118,10 @@ app.post('/api/persons', morgan(':method :url :status :res[content-length] - :re
     // persons = persons.concat(person)
 
     person.save()
-    .then(savedPerson=>{
-        res.json(savedPerson)
-    })
-    .catch(error => next(error))
+        .then(savedPerson=>{
+            res.json(savedPerson)
+        })
+        .catch(error => next(error))
     
 })
 
@@ -139,10 +139,10 @@ app.put('/api/persons/:id',(req, res, next)=>{
             res.json(updatedPerson)
         })
         .catch(error => next(error))
-    })
+})
 
 const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: ' unknown endpoint' })
+    res.status(404).send({ error: ' unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
