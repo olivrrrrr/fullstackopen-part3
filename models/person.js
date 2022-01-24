@@ -1,8 +1,7 @@
-require('dotenv').config()
+const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator');
-
-
+dotenv.config()
 dotenv.load()
 const url = process.env.MONGODB_URI
 
